@@ -10,7 +10,8 @@ cur = conn.cursor()
 
 
 def query_func(q_num):
-	queries = ['select name from euro_countries', 'select value from euro_coins_table']
+	queries = ['select name from euro_countries', 'select value from euro_coins_table order by id', 
+	'select name from euro_countries where national_side = True']
 	cur.execute(queries[q_num])
 	answer = cur.fetchall()
 	return answer
@@ -57,12 +58,29 @@ search_layout = html.Div([
 	html.Div(id='first_output')
 	])
 
+
 add_layout = html.Div([
-	html.H3('Add new coin to the database')
+	html.H3('Add new coin to the database'),
+	html.Br(),
+	html.H2('Country:'),
+	dcc.Dropdown(
+		id='coin_dropdown_add',
+		options=[{'label': i[0], 'value': i[0]} for i in query_func(2)]),
+
+	html.H2('Value:'),
+		dcc.Dropdown(
+		id='country_dropdown_add',
+		options=[{'label': i[0], 'value': i[0]} for i in query_func(1)]),
+
+	html.H2('National Side:'),
+	dcc.Textarea(id='input-box', style={'width' : '100%'}),
+	html.Button('Submit', id='button'),	
 	])
+
 
 change_layout = html.Div([
 	html.H3('Change coin\'s status')])
+
 
 
 @app.callback(Output('tabs-content', 'children'),
@@ -85,6 +103,8 @@ def update_output(country_dropdown, coin_dropdown):
 		return ('Answer: ', str(answer))
 	else:
 		return ('No results')	
+
+		
 
 if __name__ == '__main__':
 	app.run_server(debug=True)
