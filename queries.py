@@ -19,7 +19,7 @@ def complex_query_func(q_num, c_name, c_value):
 	return answer
 
 def complex_query_func_insert(c_name, c_value, n_side):
-	queries = ["insert_coin_func('{}', '{}', '{}')"]
-	cur.execute(queries.format(c_name, c_value, n_side))	
+	query = "select * from insert_coin_func('{}', '{}', '{}')"
+	cur.execute(query.format(c_name, c_value, n_side))	
 	return ('OK')
 	
