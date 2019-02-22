@@ -1,27 +1,8 @@
 import dash 
 import dash_core_components as dcc
 import dash_html_components as html
-from dash.dependencies import Input, Output
-import psycopg2
-
-conn = psycopg2.connect(dbname='coins', user='postgres', password='QklbYm')
-conn.autocommit = True
-cur = conn.cursor()
-
-
-def query_func(q_num):
-	queries = ['select name from euro_countries', 'select value from euro_coins_table order by id', 
-	'select name from euro_countries where national_side = True']
-	cur.execute(queries[q_num])
-	answer = cur.fetchall()
-	return answer
-
-def complex_query_func(q_num, c_name, c_value):
-	queries = ["select * from select_coin_func('{}') where coin_value = '{}'"]
-	cur.execute(queries[q_num].format(c_name, c_value))
-	answer = cur.fetchall()
-	return answer
-
+from dash.dependencies import Input, Output, State
+from queries import query_func, complex_query_func, complex_query_func_insert
 
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
@@ -41,7 +22,7 @@ app.layout = html.Div([
 
 
 search_layout = html.Div([
-		html.H3('Search coin in the database'),
+	html.H3('Search coin in the database'),
 
 	dcc.Dropdown(
 		id ='country_dropdown',
@@ -73,8 +54,9 @@ add_layout = html.Div([
 		options=[{'label': i[0], 'value': i[0]} for i in query_func(1)]),
 
 	html.H2('National Side:'),
-	dcc.Textarea(id='input-box', style={'width' : '100%'}),
-	html.Button('Submit', id='button'),	
+	dcc.Textarea(id='input_box_add', style={'width' : '100%'}),
+	html.Button('Submit', id='add_button'),	
+	html.Div(id='add_output')
 	])
 
 
@@ -83,8 +65,9 @@ change_layout = html.Div([
 
 
 
-@app.callback(Output('tabs-content', 'children'),
-              [Input('tabs', 'value')])
+@app.callback(
+	Output('tabs-content', 'children'),
+    [Input('tabs', 'value')])
 def render_content(tab):
     if tab == 'tab-1':
         return search_layout
@@ -96,13 +79,23 @@ def render_content(tab):
 
 @app.callback(
 	Output('first_output', 'children'),
-	[Input('country_dropdown', 'value'), Input('coin_dropdown', 'value'),])
+	[Input('country_dropdown', 'value'), Input('coin_dropdown', 'value')])
 def update_output(country_dropdown, coin_dropdown):
 	answer = complex_query_func(0, country_dropdown, coin_dropdown)
 	if answer != []:
 		return ('Answer: ', str(answer))
 	else:
 		return ('No results')	
+
+
+@app.callback(
+	Output('add_output', 'children'),
+	[Input('coin_dropdown_add', 'value'), Input('country_dropdown_add', 'value'), Input('input_box_add', 'value'), 
+	Input('add_button', 'n_clicks')])
+def update_insert(coin_dropdown_add, country_dropdown_add, input_box_add, n_clicks):
+#	answer = complex_query_func_insert(coin_dropdown_add, country_dropdown_add, input_box_add)
+#	print (answer)
+	return str(coin_dropdown_add, country_dropdown_add, input_box_add, n_clicks)
 
 		
 
