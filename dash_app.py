@@ -55,7 +55,7 @@ add_layout = html.Div([
 
 	html.H2('National Side:'),
 	dcc.Textarea(id='input_box_add', style={'width' : '100%'}),
-	html.Button('Submit', id='add_button'),	
+	html.Button('Submit', id='add_button', value='0'),	
 	html.Div(id='add_output')
 	])
 
@@ -93,9 +93,9 @@ def update_output(country_dropdown, coin_dropdown):
 	[Input('coin_dropdown_add', 'value'), Input('country_dropdown_add', 'value'), Input('input_box_add', 'value'), 
 	Input('add_button', 'n_clicks')])
 def update_insert(coin_dropdown_add, country_dropdown_add, input_box_add, n_clicks):
-#	answer = complex_query_func_insert(coin_dropdown_add, country_dropdown_add, input_box_add)
-#	print (answer)
-	return str(coin_dropdown_add, country_dropdown_add, input_box_add, n_clicks)
+	if n_clicks > 0:
+		complex_query_func_insert(coin_dropdown_add, country_dropdown_add, input_box_add)
+		return ("Coin were added to database")
 
 		
 
